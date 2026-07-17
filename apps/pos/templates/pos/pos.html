@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-header" style="text-align: left; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+    <div>
+        <div class="hero-badge" style="margin-bottom: 0.4rem;">SISTEMA POS EN TIEMPO REAL</div>
+        <h1 style="font-size: 2.2rem; margin: 0;">Terminal de Ventas & Cotización en Mostrador</h1>
+    </div>
+    <div style="background: rgba(37, 244, 200, 0.15); border: 1px solid var(--accent-turquoise); padding: 0.5rem 1.2rem; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; color: var(--accent-turquoise);">
+        🟢 CAJA ABIERTA | SUCURSAL PROVIDENCIA
+    </div>
+</div>
+
+<div class="pos-layout">
+    
+    <!-- COLUMNA IZQUIERDA: CATÁLOGO DE PRODUCTOS POS -->
+    <div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📦</span> Seleccione Equipos & Servicios Rápidos
+        </h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem;">
+            {% for product in products %}
+                <div class="card" style="padding: 1.2rem; background: var(--bg-card); border-radius: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.6rem;">
+                        <span class="product-badge {% if product.type == 'physical' %}badge-physical{% else %}badge-service{% endif %}" style="position: static; font-size: 0.7rem;">
+                            {% if product.type == 'physical' %}📦 Hardware{% else %}⚡ Servicio{% endif %}
+                        </span>
+                        <span style="font-family: 'Outfit', sans-serif; font-weight: 700; color: var(--accent-turquoise); font-size: 1.15rem;">
+                            ${{ product.price|floatformat:2 }}
+                        </span>
+                    </div>
+
+                    <h4 style="font-size: 1rem; margin-bottom: 0.5rem; line-height: 1.3;">{{ product.name }}</h4>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">{{ product.description|truncatewords:12 }}</p>
+
+                    <button type="button" class="btn btn-primary pos-add-btn" 
+                            data-id="{{ product.pk }}" 
+                            data-name="{{ product.name|escapejs }}" 
+                            data-price="{{ product.price }}" 
+                            data-type="{{ product.type }}"
+                            style="width: 100%; padding: 0.6rem; font-size: 0.85rem; justify-content: center;">
+                        + Agregar a Terminal POS
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- COLUMNA DERECHA: RECIBO Y CARRITO VIRTUAL POS -->
+    <div class="pos-panel" style="position: sticky; top: 100px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-glass); padding-bottom: 1rem; margin-bottom: 1.2rem;">
+            <h3 style="font-size: 1.35rem; margin: 0;">🖥️ Recibo en Curso</h3>
+            <button id="pos-clear-btn" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; color: var(--accent-magenta);">
+                🔄 Reiniciar
+            </button>
+        </div>
+
+        <div style="max-height: 420px; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 0.5rem;">
+            <table style="width: 100%; font-size: 0.88rem;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border-glass); color: var(--text-muted); font-size: 0.75rem;">
+                        <th style="padding: 0.5rem 0;">Ítem</th>
+                        <th style="padding: 0.5rem 0;">Precio</th>
+                        <th style="padding: 0.5rem 0;">Cant.</th>
+                        <th style="padding: 0.5rem 0; text-align: right;">Subt.</th>
+                    </tr>
+                </thead>
+                <tbody id="pos-cart-body">
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2.5rem 0; color: var(--text-muted);">
+                            Terminal vacía. Seleccione productos a la izquierda.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.4); padding: 1.2rem; border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.4rem;">
+                <span>Terminal ID:</span>
+                <span style="color: #fff; font-family: 'JetBrains Mono', monospace;">TERM-8801</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.8rem;">
+                <span>Soporte NOC Turno:</span>
+                <span style="color: var(--accent-calipso);">Ing. en Línea ✅</span>
+            </div>
+            <div style="border-top: 1px dashed var(--border-glass); padding-top: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; font-size: 1.1rem;">TOTAL POS:</span>
+                <span id="pos-total" style="font-family: 'Outfit', sans-serif; font-size: 1.8rem; font-weight: 800; color: var(--accent-turquoise);">
+                    $0.00
+                </span>
+            </div>
+        </div>
+
+        <button id="pos-checkout-btn" class="btn btn-primary" style="width: 100%; padding: 1rem; justify-content: center; font-size: 1.05rem;">
+            <span>🖨️</span> Aprobar Transacción & Emitir Recibo
+        </button>
+    </div>
+
+</div>
+{% endblock %}

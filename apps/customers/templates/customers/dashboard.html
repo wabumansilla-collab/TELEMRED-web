@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-header" style="text-align: left; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 2rem; margin-bottom: 2.5rem;">
+    <div>
+        <div class="hero-badge" style="margin-bottom: 0.5rem;">PORTAL DE GESTIÓN & SOPORTE NOC</div>
+        <h1 style="font-size: 2.4rem; margin-bottom: 0.3rem;">
+            {% if user.is_authenticated %}
+                Bienvenido, <span>{{ user.username }}</span>
+            {% else %}
+                Panel de Control <span>(Demo interactiva)</span>
+            {% endif %}
+        </h1>
+        <p style="color: var(--text-muted); margin: 0;">Área de supervisión técnica, historial de compras de equipamiento y seguimiento de cotizaciones.</p>
+    </div>
+
+    <div>
+        {% if user.is_authenticated %}
+            <a href="/customers/logout/" class="btn btn-danger" style="padding: 0.7rem 1.4rem;">
+                <span>🚪</span> Cerrar Sesión
+            </a>
+        {% else %}
+            <a href="/customers/login/" class="btn btn-primary" style="padding: 0.7rem 1.4rem;">
+                <span>🔐</span> Iniciar Sesión para Guardar Historial
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- TARJETAS DE ESTADÍSTICAS DEL CLIENTE -->
+<div class="dashboard-stats">
+    <div class="dashboard-stat-card">
+        <div class="stat-icon" style="background: rgba(37, 244, 200, 0.15); color: var(--accent-turquoise);">⚡</div>
+        <div class="stat-info">
+            <h4>{% if is_demo %}2{% else %}{{ user_quotes.count }}{% endif %}</h4>
+            <p>Cotizaciones Activas</p>
+        </div>
+    </div>
+
+    <div class="dashboard-stat-card">
+        <div class="stat-icon" style="background: rgba(72, 187, 243, 0.15); color: var(--accent-calipso);">🛒</div>
+        <div class="stat-info">
+            <h4>{{ cart_count|default:0 }}</h4>
+            <p>Ítems en Carrito</p>
+        </div>
+    </div>
+
+    <div class="dashboard-stat-card">
+        <div class="stat-icon" style="background: rgba(255, 107, 157, 0.15); color: var(--accent-magenta);">🛡️</div>
+        <div class="stat-info">
+            <h4 style="font-size: 1.2rem; color: var(--accent-turquoise);">ACTIVO (SLA 99.9%)</h4>
+            <p>Estado Soporte NOC/SOC</p>
+        </div>
+    </div>
+
+    <div class="dashboard-stat-card">
+        <div class="stat-icon" style="background: rgba(255, 255, 255, 0.08); color: #fff;">📞</div>
+        <div class="stat-info">
+            <h4 style="font-size: 1.1rem;">+56 2 2999 8877</h4>
+            <p>Línea Directa Ingeniero de Turno</p>
+        </div>
+    </div>
+</div>
+
+<!-- ACCIONES RÁPIDAS Y SECCIONES -->
+<div class="grid-2" style="margin-bottom: 3rem;">
+    
+    <!-- HISTORIAL DE COTIZACIONES -->
+    <div class="card" style="padding: 2rem; background: var(--bg-card); border-radius: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.35rem; margin: 0;">📋 Mis Solicitudes de Cotización</h3>
+            <a href="/quotes/" class="btn btn-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.8rem;">+ Nueva Cotización</a>
+        </div>
+
+        {% if is_demo %}
+            <div class="table-container" style="margin: 0; box-shadow: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Proyecto / Asunto</th>
+                            <th>Fecha</th>
+                            <th>Estado NOC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for q in demo_quotes %}
+                            <tr>
+                                <td><b>{{ q.title }}</b></td>
+                                <td><span style="color: var(--text-muted); font-size: 0.85rem;">{{ q.created_at }}</span></td>
+                                <td><span style="background: rgba(37, 244, 200, 0.15); color: var(--accent-turquoise); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">{{ q.status }}</span></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem; text-align: center;">
+                * Datos de muestra. Inicie sesión para sincronizar sus proyectos corporativos en la nube de TELEMRED.
+            </p>
+        {% else %}
+            {% if user_quotes %}
+                <div class="table-container" style="margin: 0; box-shadow: none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Proyecto / Asunto</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for q in user_quotes %}
+                                <tr>
+                                    <td><b>{{ q.title }}</b></td>
+                                    <td><span style="color: var(--text-muted); font-size: 0.85rem;">{{ q.created_at|date:"d/M/Y" }}</span></td>
+                                    <td><span style="background: rgba(72, 187, 243, 0.15); color: var(--accent-calipso); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600;">En Revisión Técnica</span></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 2.5rem 1rem; color: var(--text-muted);">
+                    <p>Aún no ha enviado ninguna cotización o requerimiento técnico.</p>
+                    <a href="/quotes/" class="btn btn-primary" style="margin-top: 0.8rem;">Solicitar Primera Cotización</a>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <!-- ACCESOS Y HERRAMIENTAS CORPORATIVAS -->
+    <div class="card" style="padding: 2rem; background: var(--bg-card); border-radius: 16px;">
+        <h3 style="font-size: 1.35rem; margin-bottom: 1.5rem;">🛠️ Herramientas e Ingeniería</h3>
+        
+        <div style="display: grid; gap: 1rem;">
+            <a href="/shop/" class="card" style="padding: 1.2rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); flex-direction: row; align-items: center; gap: 1.2rem; text-decoration: none;">
+                <div style="font-size: 2rem;">🌐</div>
+                <div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 0.2rem; color: #fff;">Catálogo Completo de Fibra & Equipos</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Especifique equipamiento Mikrotik, Cisco, Fortinet o bobinas de fibra G.657A1.</p>
+                </div>
+            </a>
+
+            <a href="/cart/" class="card" style="padding: 1.2rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); flex-direction: row; align-items: center; gap: 1.2rem; text-decoration: none;">
+                <div style="font-size: 2rem;">🛒</div>
+                <div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 0.2rem; color: #fff;">Mi Carrito de Compras & Despacho</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Revise sus ítems seleccionados, aplique cupones corporativos y calcule IVA.</p>
+                </div>
+            </a>
+
+            <a href="/pos/" class="card" style="padding: 1.2rem; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); flex-direction: row; align-items: center; gap: 1.2rem; text-decoration: none;">
+                <div style="font-size: 2rem;">🖥️</div>
+                <div>
+                    <h4 style="font-size: 1.1rem; margin-bottom: 0.2rem; color: #fff;">Terminal POS Interactiva de Tienda</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Simulador POS en tiempo real para cotizaciones rápidas en mostrador.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

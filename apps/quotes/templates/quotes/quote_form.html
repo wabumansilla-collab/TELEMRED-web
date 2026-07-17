@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-header">
+    <div class="hero-badge">CONSULTORÍA & INGENIERÍA A MEDIDA</div>
+    <h1>Solicitud de Cotización y Análisis Técnico</h1>
+    <p>Especifique los requerimientos de su proyecto de telecomunicaciones, enlaces de fibra o auditoría para recibir una propuesta formal detallada.</p>
+</div>
+
+<div class="grid-2" style="align-items: start; max-width: 1150px; margin: 0 auto;">
+    
+    <!-- FORMULARIO DE COTIZACIÓN -->
+    <div class="form-container" style="width: 100%; margin: 0;">
+        <h2 style="font-size: 1.6rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.8rem;">
+            Formulario de Especificación Técnica
+        </h2>
+
+        <form method="post" action="/quotes/">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="project_type">Tipo de Proyecto / Solución:</label>
+                <select id="project_type" name="project_type" class="form-control" required>
+                    <option value="Redes de Fibra Óptica FTTH/GPON">⚡ Redes de Fibra Óptica FTTH / GPON</option>
+                    <option value="Ciberseguridad y Firewall Next-Gen">🛡️ Ciberseguridad & Firewalls Perimetrales</option>
+                    <option value="Cableado Estructurado y Data Center">🏗️ Cableado Estructurado Cat 6A/7 & Data Center</option>
+                    <option value="Enlaces Inalámbricos de Alta Capacidad">📡 Enlaces Inalámbricos & Radioenlaces PtP</option>
+                    <option value="Monitoreo NOC & SOC Automatizado">📊 Monitoreo NOC / SOC & Soporte 24/7</option>
+                    <option value="Suministro de Hardware y Switches">📦 Compra de Hardware Específico</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="title">Título de la Solicitud / Nombre del Proyecto:</label>
+                <input type="text" id="title" name="title" class="form-control" value="{{ preselected_subject|default:'' }}" placeholder="Ej: Implementación Anillo de Fibra Óptica Planta Industrial" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contact_info">Contacto (Nombre, Empresa y Teléfono/Email):</label>
+                <input type="text" id="contact_info" name="contact_info" class="form-control" placeholder="Ej: Ing. Carlos Morales | Minera Norte | cmorales@empresa.cl | +56911223344" required>
+            </div>
+
+            <div class="form-group">
+                <label for="urgency">Prioridad / Plazo Estimado:</label>
+                <select id="urgency" name="urgency" class="form-control">
+                    <option value="Normal (2 a 4 semanas)">🟢 Normal (2 a 4 semanas)</option>
+                    <option value="Alta (1 a 2 semanas)">🟡 Alta (1 a 2 semanas)</option>
+                    <option value="Urgente / Caída de Red (Inmediato NOC)">🔴 Urgencia Crítica / Misión Crítica (Respuesta en 2 hrs)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Descripción Detallada y Alcance Técnico:</label>
+                <textarea id="description" name="description" rows="6" class="form-control" placeholder="Indique distancia en metros/kilómetros, cantidad de nodos, requerimientos de ancho de banda, normativas o marcas preferidas (Cisco, Mikrotik, Fortinet, Huawei)..." required></textarea>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 1rem; justify-content: center; font-size: 1.05rem;" onclick="showToast('Enviando cotización al departamento de ingeniería...');">
+                    <span>🚀</span> Enviar Cotización Formal a TELEMRED
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- BENEFICIOS DEL SERVICIO DE INGENIERÍA -->
+    <div class="card" style="padding: 2.5rem; background: linear-gradient(180deg, rgba(18, 25, 38, 0.9) 0%, rgba(15, 20, 32, 0.95) 100%);">
+        <div class="card-icon" style="background: rgba(72, 187, 243, 0.15); color: var(--accent-calipso);">⚡</div>
+        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">¿Por qué cotizar con TELEMRED?</h3>
+        
+        <div style="display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem;">
+            <div>
+                <h4 style="color: var(--accent-turquoise); font-size: 1.05rem; margin-bottom: 0.3rem;">✅ Respuesta Rápida & Precisa</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+                    Nuestro equipo técnico analiza la factibilidad en un plazo máximo de 24 horas hábiles, adjuntando esquemas preliminares.
+                </p>
+            </div>
+
+            <div>
+                <h4 style="color: var(--accent-calipso); font-size: 1.05rem; margin-bottom: 0.3rem;">📐 Diseño Bajo Normativa TIA/EIA</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+                    Todos los cálculos de enlaces ópticos e inalámbricos cumplen rigurosamente con los estándares internacionales de pérdida por inserción y margen de ganancia.
+                </p>
+            </div>
+
+            <div>
+                <h4 style="color: var(--accent-magenta); font-size: 1.05rem; margin-bottom: 0.3rem;">🛡️ Garantía de Continuidad NOC</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin: 0;">
+                    Cada proyecto de infraestructura incluye asesoría para planes de contingencia (Disaster Recovery) y SLA de respuesta ante incidencias.
+                </p>
+            </div>
+
+            <div style="background: rgba(0, 0, 0, 0.3); padding: 1.2rem; border-radius: 12px; border: 1px dashed var(--accent-turquoise); text-align: center;">
+                <span style="font-size: 0.85rem; color: var(--text-light);">¿Dudas urgentes con un enlace caído?</span><br>
+                <b style="color: var(--accent-turquoise); font-size: 1rem;">Línea Directa NOC: +56 2 2999 8877</b>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

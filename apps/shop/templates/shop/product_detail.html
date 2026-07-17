@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-bottom: 2rem;">
+    <a href="/shop/" class="btn btn-secondary" style="padding: 0.5rem 1.2rem; font-size: 0.9rem;">
+        ← Volver al Catálogo
+    </a>
+</div>
+
+<div class="card" style="padding: 3rem; background: var(--bg-card); border-radius: 20px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 3.5rem; align-items: start;">
+        
+        <!-- VISUAL O ICONO DEL PRODUCTO -->
+        <div class="product-image-placeholder" style="height: 380px; border-radius: 16px; font-size: 6rem; background: linear-gradient(135deg, rgba(28, 38, 56, 0.9) 0%, rgba(10, 15, 24, 0.95) 100%); border: 1px solid var(--border-glass); position: relative;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 16px;">
+            {% else %}
+                {% if 'OLT' in product.name or 'Switch' in product.name %}
+                    <span>🎛️</span>
+                {% elif 'Router' in product.name %}
+                    <span>🌐</span>
+                {% elif 'Firewall' in product.name or 'Auditoría' in product.name %}
+                    <span>🛡️</span>
+                {% elif 'Fibra' in product.name or 'Bobina' in product.name %}
+                    <span>🧵</span>
+                {% elif 'Gabinete' in product.name %}
+                    <span>🗄️</span>
+                {% else %}
+                    <span>⚡</span>
+                {% endif %}
+            {% endif %}
+
+            <span class="product-badge {% if product.type == 'physical' %}badge-physical{% else %}badge-service{% endif %}" style="top: 20px; right: 20px; font-size: 0.9rem; padding: 0.4rem 1rem;">
+                {% if product.type == 'physical' %}📦 Hardware Físico{% else %}⚡ Servicio / Auditoría{% endif %}
+            </span>
+        </div>
+
+        <!-- INFORMACIÓN TÉCNICA Y ACCIONES -->
+        <div>
+            <div class="product-category" style="font-size: 0.95rem; margin-bottom: 0.5rem;">
+                CATEGORÍA: {{ product.category.name|upper }}
+            </div>
+            
+            <h1 style="font-size: 2.3rem; margin-bottom: 1rem; line-height: 1.2;">{{ product.name }}</h1>
+            
+            <div style="font-family: 'Outfit', sans-serif; font-size: 2.2rem; font-weight: 700; color: var(--accent-turquoise); margin-bottom: 1.5rem;">
+                ${{ product.price|floatformat:2 }} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">USD + IVA</span>
+            </div>
+
+            <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border-glass); margin-bottom: 2rem;">
+                <h4 style="color: #fff; margin-bottom: 0.6rem; font-size: 1.05rem;">Especificaciones Técnicas & Descripción</h4>
+                <p style="color: var(--text-light); line-height: 1.7; font-size: 0.98rem; margin: 0;">
+                    {{ product.description }}
+                </p>
+            </div>
+
+            <div style="display: flex; gap: 1.5rem; align-items: center; margin-bottom: 2.5rem; flex-wrap: wrap;">
+                {% if product.type == 'physical' %}
+                    <div style="background: rgba(37, 244, 200, 0.1); border: 1px solid var(--accent-turquoise); padding: 0.6rem 1.2rem; border-radius: 8px; color: var(--accent-turquoise); font-weight: 600; font-size: 0.9rem;">
+                        ⚡ Stock Disponible: {{ product.stock }} unidades en bodega
+                    </div>
+                {% else %}
+                    <div style="background: rgba(72, 187, 243, 0.15); border: 1px solid var(--accent-calipso); padding: 0.6rem 1.2rem; border-radius: 8px; color: var(--accent-calipso); font-weight: 600; font-size: 0.9rem;">
+                        📅 Servicio Bajo Agendamiento NOC/SOC
+                    </div>
+                {% endif %}
+                <span style="color: var(--text-muted); font-size: 0.85rem;">🔒 Garantía 3 Años & Soporte Carrier-Class</span>
+            </div>
+
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="/cart/add/{{ product.pk }}/" class="btn btn-primary" style="flex: 1; padding: 1rem 2rem; font-size: 1.1rem; justify-content: center;" onclick="showToast('Ítem añadido al carrito exitosamente!');">
+                    <span>🛒</span> Añadir al Carrito de Compras
+                </a>
+                <a href="/quotes/?subject={{ product.name|urlencode }}" class="btn btn-secondary" style="padding: 1rem 1.8rem; font-size: 1.05rem;">
+                    <span>⚡</span> Solicitar Cotización Formal
+                </a>
+            </div>
+
+            <!-- GARANTÍAS Y BENEFICIOS -->
+            <div style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--border-glass); display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                <div>
+                    <div style="font-size: 1.4rem;">🚀</div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Despacho Express Nacional</span>
+                </div>
+                <div>
+                    <div style="font-size: 1.4rem;">🛡️</div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Certificación de Fábrica</span>
+                </div>
+                <div>
+                    <div style="font-size: 1.4rem;">👨‍💻</div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted);">Soporte Preventa e Ingeniería</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="section-header">
+    <div class="hero-badge">CATÁLOGO & SERVICIOS DE INGENIERÍA</div>
+    <h1>Equipamiento de Telecomunicaciones & Redes</h1>
+    <p>Explore nuestra selección de hardware de enrutamiento, fibra óptica FTTH, firewalls perimetrales y servicios profesionales de certificación e ingeniería.</p>
+</div>
+
+<!-- BARRA DE FILTROS INTERACTIVA -->
+<div class="filter-bar">
+    <div class="filter-pills">
+        <button class="filter-pill active" data-filter="all">Todos los Ítems</button>
+        <button class="filter-pill" data-filter="physical">📦 Hardware Físico</button>
+        <button class="filter-pill" data-filter="service">⚡ Servicios & Auditoría</button>
+    </div>
+    
+    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <input type="text" id="product-search" class="search-input" placeholder="🔍 Buscar por nombre, marca o categoría...">
+        
+        <div style="display: flex; gap: 0.5rem;">
+            <a href="/shop/" class="filter-pill {% if not selected_category %}active{% endif %}" style="text-decoration: none;">Ver Todos</a>
+            {% for cat in categories %}
+                <a href="?category={{ cat.slug }}" class="filter-pill {% if selected_category == cat.slug %}active{% endif %}" style="text-decoration: none;">
+                    {{ cat.name }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- GRILLA DE PRODUCTOS -->
+<div class="products-grid" style="grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 2rem;">
+    {% for product in products %}
+        <div class="product-card product-card-wrapper" data-name="{{ product.name|lower }}" data-type="{{ product.type }}" data-category="{{ product.category.name|lower }}">
+            <div class="product-image-placeholder">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    {% if 'OLT' in product.name or 'Switch' in product.name %}
+                        <span>🎛️</span>
+                    {% elif 'Router' in product.name %}
+                        <span>🌐</span>
+                    {% elif 'Firewall' in product.name or 'Auditoría' in product.name %}
+                        <span>🛡️</span>
+                    {% elif 'Fibra' in product.name or 'Bobina' in product.name %}
+                        <span>🧵</span>
+                    {% elif 'Gabinete' in product.name %}
+                        <span>🗄️</span>
+                    {% else %}
+                        <span>⚡</span>
+                    {% endif %}
+                {% endif %}
+                <span class="product-badge {% if product.type == 'physical' %}badge-physical{% else %}badge-service{% endif %}">
+                    {% if product.type == 'physical' %}📦 Físico{% else %}⚡ Servicio{% endif %}
+                </span>
+            </div>
+
+            <div class="product-content">
+                <div class="product-category">{{ product.category.name }}</div>
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.description|truncatewords:24 }}</p>
+
+                <div class="product-footer">
+                    <div class="product-price">
+                        ${{ product.price|floatformat:2 }} <span>USD + IVA</span>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="{% url 'product_detail' product.pk %}" class="btn btn-secondary" style="padding: 0.5rem 0.9rem; font-size: 0.85rem;">
+                            Detalles
+                        </a>
+                        <a href="/cart/add/{{ product.pk }}/" class="btn btn-primary" style="padding: 0.5rem 0.9rem; font-size: 0.85rem;" onclick="showToast('Añadiendo {{ product.name|escapejs }} al carrito...');">
+                            + Añadir
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; background: var(--bg-card); border-radius: 16px; border: 1px solid var(--border-glass);">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem;">📭</div>
+            <h3>El Catálogo está en Blanco (Listo para Administración)</h3>
+            <p style="color: var(--text-muted); max-width: 550px; margin: 0.5rem auto 1.8rem;">
+                Actualmente el catálogo no cuenta con ítems para que usted pueda gestionar y registrar sus propios productos y servicios técnicos desde la interfaz de administrador.
+            </p>
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="/admin/shop/product/add/" class="btn btn-primary" style="padding: 0.9rem 2rem; font-size: 1.05rem;">
+                    <span>➕</span> Añadir Nuevo Producto o Servicio (Panel Admin)
+                </a>
+            {% else %}
+                <a href="/customers/login/" class="btn btn-secondary">
+                    <span>🔐</span> Iniciar Sesión como Administrador
+                </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

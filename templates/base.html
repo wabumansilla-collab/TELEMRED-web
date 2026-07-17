@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TELEMRED - Soluciones de Infraestructura & Telecomunicaciones</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/main.js" defer></script>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="logo-container">
+            <div class="logo-icon">T</div>
+            <span class="logo-text">TELEMRED</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Inicio</a>
+            <a href="/shop/" class="nav-link {% if '/shop' in request.path %}active{% endif %}">Catálogo & Servicios</a>
+            <a href="/quotes/" class="nav-link {% if '/quotes' in request.path %}active{% endif %}">Cotizar Enlace/Red</a>
+            <a href="/cart/" class="nav-link {% if '/cart' in request.path %}active{% endif %}">
+                Carrito
+                {% if request.session.cart %}
+                    <span class="nav-badge">{{ request.session.cart.keys|length }}</span>
+                {% endif %}
+            </a>
+            <a href="/customers/dashboard/" class="nav-link {% if '/customers' in request.path %}active{% endif %}">Portal Cliente</a>
+        </nav>
+
+        <div class="nav-actions">
+            {% if user.is_authenticated and user.is_staff %}
+                <a href="/admin/" class="btn-pos" style="background: rgba(255, 107, 157, 0.15); border-color: var(--accent-magenta); color: var(--accent-magenta);" title="Panel de Administración Django">
+                    <span>⚙️</span> Panel Admin
+                </a>
+                <a href="/pos/" class="btn-pos">
+                    <span>🖥️</span> POS Terminal
+                </a>
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <span style="font-size: 0.85rem; color: var(--accent-turquoise);">👤 {{ user.username }}</span>
+                <a href="/customers/logout/" class="btn btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;" title="Cerrar Sesión">Salida</a>
+            {% else %}
+                <a href="/customers/login/" class="btn btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Ingresar</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        {% if messages %}
+            <div style="margin-bottom: 1.5rem;">
+                {% for message in messages %}
+                    <div style="background: rgba(37, 244, 200, 0.15); border: 1px solid var(--accent-turquoise); padding: 1rem 1.5rem; border-radius: 10px; margin-bottom: 0.5rem; color: #fff;">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-col">
+                <div class="logo-container" style="margin-bottom: 1rem;">
+                    <div class="logo-icon">T</div>
+                    <span class="logo-text">TELEMRED</span>
+                </div>
+                <p>Solución tecnológica avanzada para infraestructura de telecomunicaciones corporativas, redes de fibra óptica FTTH/GPON y ciberseguridad.</p>
+                <p style="color: var(--accent-calipso);">⚡ Soporte Técnico & NOC 24/7/365</p>
+            </div>
+
+            <div class="footer-col">
+                <h4>Servicios & Soluciones</h4>
+                <ul class="footer-links">
+                    <li><a href="/shop/">Redes de Fibra Óptica (FTTH/GPON)</a></li>
+                    <li><a href="/shop/">Ciberseguridad & Firewalls Next-Gen</a></li>
+                    <li><a href="/shop/">Cableado Estructurado Cat 6A / 7</a></li>
+                    <li><a href="/shop/">Consultoría NOC & Monitoreo SOC</a></li>
+                    <li><a href="/shop/">Enlaces Inalámbricos de Alta Capacidad</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Acceso & Gestión</h4>
+                <ul class="footer-links">
+                    <li><a href="/quotes/">Solicitar Cotización de Proyecto</a></li>
+                    <li><a href="/cart/">Mi Carrito de Compras</a></li>
+                    <li><a href="/customers/dashboard/">Área de Clientes</a></li>
+                    {% if user.is_authenticated and user.is_staff %}
+                        <li><a href="/pos/">Terminal POS de Tienda</a></li>
+                        <li><a href="/admin/">Acceso Administrativo</a></li>
+                    {% else %}
+                        <li><a href="/customers/login/">Acceso Administrativo (Login)</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>Contacto de Ingeniería</h4>
+                <p>📍 Av. Nueva Providencia 1881, Oficina 1204, Santiago, Chile</p>
+                <p>📞 Soporte Técnico: +56 2 2999 8877</p>
+                <p>✉️ Contacto: proyectos@telemred.cl</p>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 TELEMRED Ingeniería y Telecomunicaciones SPA. Todos los derechos reservados.</span>
+            <span>Diseño e Ingeniería High-Tech de Vanguardia</span>
+        </div>
+    </footer>
+</body>
+</html>
